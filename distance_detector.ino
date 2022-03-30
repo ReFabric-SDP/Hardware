@@ -36,6 +36,7 @@ void loop() {
   delay(1000); // slow down serial port 
   
   if (distance <= 30){
-    Serial.println(distance);   // print the distance
+    Serial.print(distance);   // print the distance
+    Serial.print(" cm");
   }
 }

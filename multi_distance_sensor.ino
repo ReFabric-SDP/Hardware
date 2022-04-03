@@ -26,21 +26,12 @@ void loop() {
   // slow down serial port
   delay(1000); 
 
-  Serial.print("Sensor 0: ");
   Serial.print(distance0);
-  Serial.println(" cm");
-
-  Serial.print("Sensor 1: ");
+  Serial.print(" ");
   Serial.print(distance1);
-  Serial.println(" cm");
-
-  Serial.print("Sensor 2: ");
+  Serial.print(" ");
   Serial.print(distance2);
-  Serial.println(" cm");
-
-  Serial.print("Sensor 3: ");
-  Serial.print(distance3);
-  Serial.println(" cm");
-
-  Serial.println("----------------------------------");
+  Serial.print(" ");
+  Serial.println(distance3);
+  
 }

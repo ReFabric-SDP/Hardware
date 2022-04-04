@@ -1,7 +1,7 @@
-#define sensor1 A0 // Sharp IR GP2Y0A41SK0F (4-30cm, analog)
-#define sensor2 A1
+#define sensor1 A4 // Sharp IR GP2Y0A41SK0F (4-30cm, analog)
+#define sensor2 A3
 #define sensor3 A2
-#define sensor4 A3
+#define sensor4 A1
 // TODO: sensor1 should be top left, 2 should be top right, 3 bottom left
 
 void setup() {

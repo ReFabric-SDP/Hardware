@@ -41,10 +41,12 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind(('', PORT))
 sock.listen()
 pi_socket, pi_address = sock.accept()
+print("ev3 listening for command")
 
 while True:
     command = int.from_bytes(pi_socket.recv(1), 'big')
-    if command == EV3Commands.MOVE_BACK_FROM_1_4:
+    if command == EV3Commands.MOVE_TO_BUCKET_1_4:
+        print("MOVE_TO_BUCKET_1_4")
         ma.run_timed(speed_sp=-SPEED, time_sp=TIME_MOVE_TO_1_4)
         mb.run_timed(speed_sp=SPEED, time_sp=TIME_MOVE_TO_1_4)
         mc.run_timed(speed_sp=SPEED, time_sp=TIME_MOVE_TO_1_4)
@@ -53,6 +55,7 @@ while True:
         pi_socket.send(command.to_bytes(1, 'big'))
 
     elif command == EV3Commands.MOVE_TO_BUCKET_2_5:
+        print("MOVE_TO_BUCKET_2_5")
         ma.run_timed(speed_sp=-SPEED, time_sp=TIME_MOVE_TO_2_5)
         mb.run_timed(speed_sp=SPEED, time_sp=TIME_MOVE_TO_2_5)
         mc.run_timed(speed_sp=SPEED, time_sp=TIME_MOVE_TO_2_5)
@@ -61,6 +64,7 @@ while True:
         pi_socket.send(command.to_bytes(1, 'big'))
 
     elif command == EV3Commands.MOVE_BACK_FROM_1_4:
+        print("MOVE_BACK_FROM_1_4")
         ma.run_timed(speed_sp=SPEED, time_sp=TIME_MOVE_TO_1_4 + 200)
         mb.run_timed(speed_sp=-SPEED, time_sp=TIME_MOVE_TO_1_4 + 200)
         mc.run_timed(speed_sp=-SPEED, time_sp=TIME_MOVE_TO_1_4 + 200)
@@ -69,6 +73,7 @@ while True:
         pi_socket.send(command.to_bytes(1, 'big'))
 
     elif command == EV3Commands.MOVE_BACK_FROM_2_5:
+        print("MOVE_BACK_FROM_2_5")
         ma.run_timed(speed_sp=SPEED, time_sp=TIME_MOVE_TO_2_5 + 200)
         mb.run_timed(speed_sp=-SPEED, time_sp=TIME_MOVE_TO_2_5 + 200)
         mc.run_timed(speed_sp=-SPEED, time_sp=TIME_MOVE_TO_2_5 + 200)

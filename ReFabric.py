@@ -34,6 +34,8 @@ class ReFabric:
 
     def start(self):
         if not self.main_loop_thread:
+            # vision will need to take a picture of the background
+            requests.get(self.vision_pi_url + "/take_background")
             self.is_started = True
             self.main_loop_thread = threading.Thread(target=self.run)
             self.main_loop_thread.start()
@@ -61,6 +63,11 @@ class ReFabric:
                 continue
             # action should be an int from 1 to 8 inclusive, representing actions to be performed by the arm
             action = int(requests.get(self.vision_pi_url + "/get_pickup_action").text)
+
+            if action == 0:  # nothing left to grab
+                with self.main_lock:
+                    self.is_started = False
+                    continue
 
             # send to arm
             self.ser.write(action.to_bytes(1, 'big'))

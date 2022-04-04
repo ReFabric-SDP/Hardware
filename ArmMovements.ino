@@ -23,6 +23,11 @@ enum actions {
   DROP_OFF_5
 }
 
+// pickup includes 2 steps: reaching down, and raising to camera
+void raise_to_camera() {
+
+}
+
 // tlu = top left upper, brl = bottom right lower
 void pickup_action_tlu() {
 

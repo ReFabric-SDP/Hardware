@@ -86,23 +86,25 @@ class ReFabric:
             self.ser.flush()
             print("sent action %d to arm" % action)
 
-            # await confirmation of action finish
-            confirmation = int.from_bytes(self.ser.read(), 'big')
-            if confirmation != action:
-                print("ERROR, arm action %d different from command %d" % (confirmation, action))
+            # await pickup_confirmation of action finish
+            # TODO: arm needs to perform said action, and raise to camera position
+            pickup_confirmation = int.from_bytes(self.ser.read(), 'big')
+            if pickup_confirmation != action:
+                print("ERROR, arm action %d different from command %d" % (pickup_confirmation, action))
                 continue
             else:
-                # okay, go to standby position before dropping/moving car
+                # okay, call camera and go to standby position before dropping/moving car
+                bucket_to_go = int(requests.get(self.vision_pi_url + "/do_classification").text)
                 print("action %d finished by arm, moving to standby position" % action)
                 self.ser.write(PickupAction.STANDBY.to_bytes(1, 'big'))
                 self.ser.flush()
                 standby_done = int.from_bytes(self.ser.read(), 'big')
                 if standby_done != 99:  # this is hardcoded
-                    print("ERROR, standby confirmation %d, should be 99" % standby_done)
+                    print("ERROR, standby pickup_confirmation %d, should be 99" % standby_done)
                     continue
 
             # get bucket to go to from vision pi, move there and wait for finish
-            bucket_to_go = int(requests.get(self.vision_pi_url + "/do_classification").text)
+
             if bucket_to_go == 0 or bucket_to_go == 3:  # then not moving
                 pass
             if bucket_to_go == 1 or bucket_to_go == 4:
@@ -113,7 +115,7 @@ class ReFabric:
                 print("ERROR, bucket to go is %d" % bucket_to_go)
                 continue
             move_confirmation = int.from_bytes(self.ev3_socket.recv(1), 'big')
-            print("move to bucket confirmation:", move_confirmation)
+            print("move to bucket pickup_confirmation:", move_confirmation)
 
             # perform drop off action with arm
             if bucket_to_go == 0 or bucket_to_go == 1:
@@ -135,7 +137,7 @@ class ReFabric:
             # wait for drop off action finish
             drop_off_confirmation = int.from_bytes(self.ser.read(), 'big')
             if drop_off_confirmation != 1 or drop_off_confirmation != 2:
-                print("ERROR: UNEXPECTED drop off confirmation", drop_off_confirmation)
+                print("ERROR: UNEXPECTED drop off pickup_confirmation", drop_off_confirmation)
                 continue
 
             # tell ev3 to come back, wait for finish
@@ -149,10 +151,10 @@ class ReFabric:
                 print("ERROR, bucket to go is %d" % bucket_to_go)
                 continue
             move_back_confirmation = int.from_bytes(self.ev3_socket.recv(1), 'big')
-            print("move back from bucket confirmation:", move_back_confirmation)
+            print("move back from bucket pickup_confirmation:", move_back_confirmation)
             # move to safe ready position
             self.ser.write(PickupAction.READY.to_bytes(1, 'big'))
             self.ser.flush()
             ready_confirmation = int.from_bytes(self.ser.read(), 'big')
             if ready_confirmation != 98:
-                print("ERROR, EXPECTED ready position confirmation 98, got %d" % ready_confirmation)
+                print("ERROR, EXPECTED ready position pickup_confirmation 98, got %d" % ready_confirmation)

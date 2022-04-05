@@ -13,7 +13,7 @@ class ReFabric:
     # ev3_addr = "IP_ADDR_HERE"
     # vision_pi_addr = "IP_ADDR_HERE"
 
-    def __init__(self, ev3_addr, vision_pi_addr, hardcode=False):
+    def __init__(self, ev3_addr, vision_pi_addr, hardcode=True):
         self.pickup_actions_hardcoded = [PickupAction.TOP_LEFT_UPPER, PickupAction.TOP_LEFT_LOWER, PickupAction.TOP_RIGHT_LOWER, PickupAction.BOTTOM_LEFT_LOWER, PickupAction.BOTTOM_RIGHT_LOWER]
         self.hardcode = hardcode
 

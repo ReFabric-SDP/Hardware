@@ -13,7 +13,10 @@ class ReFabric:
     # ev3_addr = "IP_ADDR_HERE"
     # vision_pi_addr = "IP_ADDR_HERE"
 
-    def __init__(self, ev3_addr, vision_pi_addr):
+    def __init__(self, ev3_addr, vision_pi_addr, hardcode=False):
+        self.pickup_actions_hardcoded = [PickupAction.TOP_LEFT_UPPER, PickupAction.TOP_LEFT_LOWER, PickupAction.TOP_RIGHT_LOWER, PickupAction.BOTTOM_LEFT_LOWER, PickupAction.BOTTOM_RIGHT_LOWER]
+        self.hardcode = hardcode
+
         self.ev3_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ev3_socket.connect((ev3_addr, self.ev3_port))
         self.vision_pi_addr = vision_pi_addr  # the other pi
@@ -61,10 +64,19 @@ class ReFabric:
             if not self.is_started:
                 sleep(0.1)
                 continue
-            # action should be an int from 1 to 8 inclusive, representing actions to be performed by the arm
-            action = int(requests.get(self.vision_pi_url + "/get_pickup_action").text)
+            # hardcoded magic goes here
+            if self.hardcode:
+                if len(self.pickup_actions_hardcoded) == 0:
+                    action = 0
+                else:
+                    action = self.pickup_actions_hardcoded.pop(0)
+            else:
+                # action should be an int from 1 to 8 inclusive, representing actions to be performed by the arm
+                action = int(requests.get(self.vision_pi_url + "/get_pickup_action").text)
+                print("got action %d from vision pi" % action)
 
             if action == 0:  # nothing left to grab
+                print("nothing left to grab, stopping")
                 with self.main_lock:
                     self.is_started = False
                     continue
@@ -72,24 +84,35 @@ class ReFabric:
             # send to arm
             self.ser.write(action.to_bytes(1, 'big'))
             self.ser.flush()
+            print("sent action %d to arm" % action)
 
             # await confirmation of action finish
             # TODO: arm needs to perform said action, and raise to camera position
             confirmation = int.from_bytes(self.ser.read(), 'big')
             if confirmation != action:
-                print("WARNING, arm action %d different from command %d" % (confirmation, action))
+                print("ERROR, arm action %d different from command %d" % (confirmation, action))
+                continue
             else:
-                print("action %d finished by arm" % action)
+                # okay, go to standby position before dropping/moving car
+                print("action %d finished by arm, moving to standby position" % action)
+                self.ser.write(PickupAction.STANDBY.to_bytes(1, 'big'))
+                self.ser.flush()
+                standby_done = int.from_bytes(self.ser.read(), 'big')
+                if standby_done != 99:  # this is hardcoded
+                    print("ERROR, standby confirmation %d, should be 99" % standby_done)
+                    continue
 
-            # get bucket to go to by from vision pi, move there and wait for finish
+            # get bucket to go to from vision pi, move there and wait for finish
             bucket_to_go = int(requests.get(self.vision_pi_url + "/do_classification").text)
-            # if bucket_to_go == 0 or bucket_to_go == 3: then not moving
+            if bucket_to_go == 0 or bucket_to_go == 3:  # then not moving
+                pass
             if bucket_to_go == 1 or bucket_to_go == 4:
                 self.ev3_socket.send(EV3Commands.MOVE_TO_BUCKET_1_4.to_bytes(1, 'big'))
             elif bucket_to_go == 2 or bucket_to_go == 5:
                 self.ev3_socket.send(EV3Commands.MOVE_TO_BUCKET_2_5.to_bytes(1, 'big'))
             else:
                 print("ERROR, bucket to go is %d" % bucket_to_go)
+                continue
             move_confirmation = int.from_bytes(self.ev3_socket.recv(1), 'big')
             print("move to bucket confirmation:", move_confirmation)
 
@@ -108,18 +131,29 @@ class ReFabric:
                 self.ser.flush()
             else:
                 print("ERROR: got drop off action for bucket", bucket_to_go)
+                continue
 
             # wait for drop off action finish
             drop_off_confirmation = int.from_bytes(self.ser.read(), 'big')
             if drop_off_confirmation != 1 or drop_off_confirmation != 2:
                 print("ERROR: UNEXPECTED drop off confirmation", drop_off_confirmation)
+                continue
 
             # tell ev3 to come back, wait for finish
+            if bucket_to_go == 0 or bucket_to_go == 3:  # then not moving
+                pass
             if bucket_to_go == 1 or bucket_to_go == 4:
                 self.ev3_socket.send(EV3Commands.MOVE_BACK_FROM_1_4.to_bytes(1, 'big'))
             elif bucket_to_go == 2 or bucket_to_go == 5:
                 self.ev3_socket.send(EV3Commands.MOVE_BACK_FROM_2_5.to_bytes(1, 'big'))
             else:
                 print("ERROR, bucket to go is %d" % bucket_to_go)
+                continue
             move_back_confirmation = int.from_bytes(self.ev3_socket.recv(1), 'big')
             print("move back from bucket confirmation:", move_back_confirmation)
+            # move to safe ready position
+            self.ser.write(PickupAction.READY.to_bytes(1, 'big'))
+            self.ser.flush()
+            ready_confirmation = int.from_bytes(self.ser.read(), 'big')
+            if ready_confirmation != 98:
+                print("ERROR, EXPECTED ready position confirmation 98, got %d" % ready_confirmation)

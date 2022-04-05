@@ -30,5 +30,9 @@ def on_app_stop():
 if __name__ == '__main__':
     ev3_addr = argv[1]
     vision_pi_addr = argv[2]
-    ReFabric = ReFabric.ReFabric(ev3_addr, vision_pi_addr)
+    try:
+        hardcode = bool(argv[3])
+    except:
+        hardcode = False
+    ReFabric = ReFabric.ReFabric(ev3_addr, vision_pi_addr, hardcode)
     app.run(host='0.0.0.0')

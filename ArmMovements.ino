@@ -20,29 +20,50 @@ enum actions {
   DROP_OFF_01,
   DROP_OFF_34,
   DROP_OFF_2,
-  DROP_OFF_5
+  DROP_OFF_5,
+  READY = 98,
+  STANDBY = 99
 }
 
 // pickup includes 2 steps: reaching down, and raising to camera
 void raise_to_camera() {
+  Braccio.ServoMovement(20,          90,  85, 40, 20, 90, 73); // move backwards a bit to not hit back of box
+  Braccio.ServoMovement(20,          60,  90, 80, 50, 90, 73);  // move for camera
+}
 
+void to_standby_position() {
+  Braccio.ServoMovement(20,          90,  90, 90, 0, 90,  73);
+}
+
+void to_ready_position() {
+    // same as begin position
+    Braccio.ServoMovement(20,          90,  130, 20, 90, 0, 73);
 }
 
 // tlu = top left upper, brl = bottom right lower
 void pickup_action_tlu() {
-
+Braccio.ServoMovement(20,          70,  50, 60, 30, 90,  0);
+Braccio.ServoMovement(20,          70,  50, 60, 30, 90,  73);
+raise_to_camera();
 }
 
 void pickup_action_tll() {
-
+Braccio.ServoMovement(20,          70,  20, 80, 30, 90,  0);
+Braccio.ServoMovement(20,          70,  20, 80, 30, 90,  73);
+raise_to_camera();
 }
 
 void pickup_action_tru() {
-
+Braccio.ServoMovement(20,         110,  50, 60, 30, 90,  0);
+Braccio.ServoMovement(20,         110,  50, 60, 30, 90,  73);
+raise_to_camera();
 }
 
-void pickup_action_trl() {
 
+void pickup_action_trl() {
+Braccio.ServoMovement(20,          110,  20, 80, 30, 90,  0);
+Braccio.ServoMovement(20,          110,  20, 80, 30, 90,  73);
+raise_to_camera();
 }
 
 void pickup_action_blu() {
@@ -124,7 +145,9 @@ void loop() {
       case BOTTOM_LEFT_LOWER: pickup_action_bll(); Serial.write((unsigned int)command); break;
       case BOTTOM_RIGHT_UPPER: pickup_action_bru(); Serial.write((unsigned int)command); break;
       case BOTTOM_RIGHT_LOWER: pickup_action_brl(); Serial.write((unsigned int)command); break;
-      default: Serial.write(99); break;  // junk value
+      case STANDBY: to_standby_position(); Serial.write((unsigned int)command); break;
+      case READY: to_ready_position(); Serial.write((unsigned int)command); break;
+      default: Serial.write(88); break;  // junk value
     }
   }
 }

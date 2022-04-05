@@ -10,3 +10,5 @@ class PickupAction(IntEnum):
     BOTTOM_LEFT_LOWER = 6
     BOTTOM_RIGHT_UPPER = 7
     BOTTOM_RIGHT_LOWER = 8
+    READY = 98
+    STANDBY = 99

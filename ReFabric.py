@@ -87,7 +87,6 @@ class ReFabric:
             print("sent action %d to arm" % action)
 
             # await confirmation of action finish
-            # TODO: arm needs to perform said action, and raise to camera position
             confirmation = int.from_bytes(self.ser.read(), 'big')
             if confirmation != action:
                 print("ERROR, arm action %d different from command %d" % (confirmation, action))

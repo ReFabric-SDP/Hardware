@@ -167,6 +167,12 @@ void loop() {
       case BOTTOM_LEFT_LOWER: pickup_action_bll(); Serial.write((unsigned int)command); break;
       case BOTTOM_RIGHT_UPPER: pickup_action_bru(); Serial.write((unsigned int)command); break;
       case BOTTOM_RIGHT_LOWER: pickup_action_brl(); Serial.write((unsigned int)command); break;
+
+      case DROP_OFF_01: drop_off_action_01(); Serial.write((unsigned int)command); break;
+      case DROP_OFF_2: drop_off_action_2(); Serial.write((unsigned int)command); break;
+      case DROP_OFF_34: drop_off_action_34(); Serial.write((unsigned int)command); break;
+      case DROP_OFF_5: drop_off_action_5(); Serial.write((unsigned int)command); break;
+
       case STANDBY: to_standby_position(); Serial.write((unsigned int)command); break;
       case READY: to_ready_position(); Serial.write((unsigned int)command); break;
       default: Serial.write(88); break;  // junk value

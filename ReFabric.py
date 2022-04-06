@@ -115,7 +115,7 @@ class ReFabric:
                 print("ERROR, bucket to go is %d" % bucket_to_go)
                 continue
             move_confirmation = int.from_bytes(self.ev3_socket.recv(1), 'big')
-            print("move to bucket pickup_confirmation:", move_confirmation)
+            print("move to bucket move_confirmation:", move_confirmation)
 
             # perform drop off action with arm
             if bucket_to_go == 0 or bucket_to_go == 1:
@@ -137,7 +137,7 @@ class ReFabric:
             # wait for drop off action finish
             drop_off_confirmation = int.from_bytes(self.ser.read(), 'big')
             if drop_off_confirmation != 1 or drop_off_confirmation != 2:
-                print("ERROR: UNEXPECTED drop off pickup_confirmation", drop_off_confirmation)
+                print("ERROR: UNEXPECTED drop off dropoff_confirmation", drop_off_confirmation)
                 continue
 
             # tell ev3 to come back, wait for finish
@@ -151,10 +151,10 @@ class ReFabric:
                 print("ERROR, bucket to go is %d" % bucket_to_go)
                 continue
             move_back_confirmation = int.from_bytes(self.ev3_socket.recv(1), 'big')
-            print("move back from bucket pickup_confirmation:", move_back_confirmation)
+            print("move back from bucket moveback_confirmation:", move_back_confirmation)
             # move to safe ready position
             self.ser.write(PickupAction.READY.to_bytes(1, 'big'))
             self.ser.flush()
             ready_confirmation = int.from_bytes(self.ser.read(), 'big')
             if ready_confirmation != 98:
-                print("ERROR, EXPECTED ready position pickup_confirmation 98, got %d" % ready_confirmation)
+                print("ERROR, EXPECTED ready position ready_confirmation 98, got %d" % ready_confirmation)

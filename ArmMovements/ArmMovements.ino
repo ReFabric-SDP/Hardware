@@ -45,14 +45,14 @@ void pickup_action_tlu() {
 Braccio.ServoMovement(20,          70,  50, 60, 30, 90,  0);
 Braccio.ServoMovement(20,          70,  50, 60, 30, 90,  73);
 raise_to_camera();
-to_standby_position();
+// to_standby_position();
 }
 
 void pickup_action_tll() {
 Braccio.ServoMovement(20,          70,  20, 80, 30, 90,  0);
 Braccio.ServoMovement(20,          70,  20, 80, 30, 90,  73);
 raise_to_camera();
-to_standby_position();
+// to_standby_position();
 
 }
 
@@ -60,7 +60,7 @@ void pickup_action_tru() {
 Braccio.ServoMovement(20,         110,  50, 60, 30, 90,  0);
 Braccio.ServoMovement(20,         110,  50, 60, 30, 90,  73);
 raise_to_camera();
-to_standby_position();
+// to_standby_position();
 }
 
 
@@ -68,35 +68,35 @@ void pickup_action_trl() {
 Braccio.ServoMovement(20,          110,  20, 80, 30, 90,  0);
 Braccio.ServoMovement(20,          110,  20, 80, 30, 90,  73);
 raise_to_camera();
-to_standby_position();
+// to_standby_position();
 }
 
 void pickup_action_blu() {
   Braccio.ServoMovement(20,          70,  50, 70, 0, 90,  0);  
   Braccio.ServoMovement(20,          70,  50, 70, 0, 90,  73); 
   raise_to_camera();
-  to_standby_position();
+//   to_standby_position();
 }
 
 void pickup_action_bll() {
   Braccio.ServoMovement(20,          70,  20, 50, 30, 90,  0);  
   Braccio.ServoMovement(20,          70,  20, 50, 30, 90,  73); 
   raise_to_camera();
-  to_standby_position();
+//   to_standby_position();
 }
 
 void pickup_action_bru() {
   Braccio.ServoMovement(20,          110,  50, 70, 0, 90,  0);  
   Braccio.ServoMovement(20,          110,  50, 70, 0, 90,  73); 
   raise_to_camera();
-  to_standby_position();
+//   to_standby_position();
 }
 
 void pickup_action_brl() {
   Braccio.ServoMovement(20,          110,  20, 50, 30, 90,  0);  
   Braccio.ServoMovement(20,          110,  20, 50, 30, 90,  73); 
   raise_to_camera();
-  to_standby_position();
+//   to_standby_position();
 }
 
 void drop_off_action_01() {
